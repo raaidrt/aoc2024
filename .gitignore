@@ -21,6 +21,7 @@ Cargo.lock
 #.idea
 
 target*/
+.DS_Store
 
 # Advent of Code Input File
 _inp.txt
