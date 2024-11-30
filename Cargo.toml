@@ -1,0 +1,19 @@
+[package]
+name = "aoc2024"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[build-dependencies]
+syn = { version = "2.0.89", features = ["full", "parsing"] }
+
+[dependencies]
+clap = { version = "4.5.21", features = ["derive"] }
+fraction = "0.15.3"
+paste = "1.0.15"
+rayon = "1.10.0"
+rgb = "0.8.50"
+seq-macro = "0.3.5"
+textplots = "0.8.6"
+tqdm = "0.7.0"
