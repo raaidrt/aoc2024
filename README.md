@@ -10,7 +10,7 @@ The Rust crate that I will be using for writing parallel code is [Rayon](https:/
 
 If you want to run my solution for Day 1 part A with the input being stored in the file `_inp.txt`, then run the following command
 ```[zsh]
-cargo run -- --day 1 --file-name _inp.txt --plot --stage a
+cargo run -- --day 1 --file-name _inp.txt --stage a
 ```
 
 ## Adding solutions
