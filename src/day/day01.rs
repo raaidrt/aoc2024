@@ -1,3 +1,5 @@
+// Placeholder implementation for Day 24 of Advent of Code 2023
+
 use super::super::stage::{Stage, StageUnimplemented};
 use fraction::GenericFraction;
 use rayon::prelude::*;
