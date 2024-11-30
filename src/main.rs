@@ -1,4 +1,5 @@
 mod day;
+mod stage;
 
 use clap::Parser;
 use fraction::ToPrimitive;
@@ -25,16 +26,19 @@ struct Args {
     file_name: String,
     #[arg(long, default_value_t = false)]
     plot: bool,
+    #[arg(long)]
+    stage: stage::Stage,
 }
 
 use paste::paste;
 use seq_macro::seq;
+use stage::Stage;
 
 seq!(N in 1..=25 {
-    fn run(day: u8, s: &str) -> Result<String, Box<dyn Error>> {
+    fn run(day: u8, s: &str, stage: Stage) -> Result<String, Box<dyn Error>> {
         match day {
             #(
-                N => paste!(day::[<day N>]::run(s)),
+                N => paste!(day::[<day N>]::run(s, stage)),
             )*
             _ => Err(Box::new(DayError(day.into()))),
         }
@@ -71,37 +75,38 @@ fn main() -> Result<(), Box<dyn Error>> {
                 .build()
                 .unwrap();
             let before = Instant::now();
-            final_result = pool.install(|| run(args.day, &result).unwrap());
+            final_result = pool.install(|| run(args.day, &result, args.stage.clone()).unwrap());
             times[i] = before.elapsed().as_secs_f32();
         }
+        println!("\nRuntime (s) against Number of Threads Available");
+
+        // Create pairs of points from x and y values
+        let points: Vec<(f32, f32)> = num_threads_range
+            .iter()
+            .map(|x| f32::from(*x))
+            .zip(times)
+            .map(|(x, y)| (x, y))
+            .collect();
+
+        let lines = Shape::Lines(&points);
+        let mut chart = Chart::new(
+            180,
+            60,
+            f32::from(NUM_THREADS_MIN),
+            f32::from(NUM_THREADS_MAX),
+        );
+
+        let chart = chart
+            .linecolorplot(&lines, rgb::Rgb { r: 0, g: 255, b: 0 })
+            .x_label_format(textplots::LabelFormat::Custom(Box::new(move |x| {
+                x.trunc().to_usize().unwrap().to_string()
+            })));
+        let chart = chart.x_axis_style(LineStyle::Dashed);
+        let chart = chart.y_axis_style(LineStyle::Dashed);
+        chart.nice();
+    } else {
+        final_result = run(args.day, &result, args.stage)?;
     }
-
-    println!("\nRuntime (s) against Number of Threads Available");
-
-    // Create pairs of points from x and y values
-    let points: Vec<(f32, f32)> = num_threads_range
-        .iter()
-        .map(|x| f32::from(*x))
-        .zip(times)
-        .map(|(x, y)| (x, y))
-        .collect();
-
-    let lines = Shape::Lines(&points);
-    let mut chart = Chart::new(
-        180,
-        60,
-        f32::from(NUM_THREADS_MIN),
-        f32::from(NUM_THREADS_MAX),
-    );
-
-    let chart = chart
-        .linecolorplot(&lines, rgb::Rgb { r: 0, g: 255, b: 0 })
-        .x_label_format(textplots::LabelFormat::Custom(Box::new(move |x| {
-            x.trunc().to_usize().unwrap().to_string()
-        })));
-    let chart = chart.x_axis_style(LineStyle::Dashed);
-    let chart = chart.y_axis_style(LineStyle::Dashed);
-    chart.nice();
 
     println!(
         "Running Day {} w/ Input File: {}\nResult:\n-----------------------\n{}",

@@ -21,6 +21,7 @@ fn main() -> Result<(), Box<dyn error::Error>> {
         .append(true)
         .open(path::Path::new("src/day/mod.rs"))?;
     writeln!(mod_file, "use std::error::Error;")?;
+    writeln!(mod_file, "use super::stage::Stage;")?;
 
     let mut first_default_method = true;
     for day in 1..=NUM_DAYS {
@@ -47,7 +48,7 @@ fn main() -> Result<(), Box<dyn error::Error>> {
             writeln!(
                 mod_file,
                 "pub mod day{day} {{\
-                    pub fn run(_s: &str) -> Result<String, Box<dyn super::Error>> {{\
+                    pub fn run(_s: &str, _stage: super::Stage) -> Result<String, Box<dyn super::Error>> {{\
                         Err(Box::new(super::DayError({day}.into())))
                     }}\
                 }}"
