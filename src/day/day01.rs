@@ -3,13 +3,13 @@ use dashmap::DashMap;
 use rayon::prelude::*;
 pub use std::error::Error;
 
-fn parse(s: &str) -> (Vec<i32>, Vec<i32>) {
+fn parse(s: &str) -> (Vec<i128>, Vec<i128>) {
     let pairs: Vec<&str> = s.lines().into_iter().map(|s| s.trim()).collect();
-    let (left, right): (Vec<i32>, Vec<i32>) = pairs
+    let (left, right): (Vec<i128>, Vec<i128>) = pairs
         .par_iter()
         .map(|line| {
             let pair: Vec<&str> = line.split("   ").collect();
-            let (left, right): (i32, i32) = (pair[0].parse().unwrap(), pair[1].parse().unwrap());
+            let (left, right): (i128, i128) = (pair[0].parse().unwrap(), pair[1].parse().unwrap());
             (left, right)
         })
         .unzip();
@@ -36,7 +36,7 @@ pub fn run(s: &str, stage: Stage) -> Result<String, Box<dyn Error>> {
                 map.insert(*x, 0);
             });
             right.par_iter().for_each(|x| {
-                map.alter(x, |_: &i32, v: i32| v + 1);
+                map.alter(x, |_: &i128, v: i128| v + 1);
             });
             let result = left
                 .par_iter()
