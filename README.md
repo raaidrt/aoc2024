@@ -20,14 +20,14 @@ If you want to use this template for your own Advent of Code setup, then first s
 If you want to add a solution for day 2, then add a file `day02.rs` inside `src/day`. If you want to add a solution for day 16, then add a file `day16.rs` inside `src/day`. 
 
 Inside that file, add a method with the following signature.
-```[rust]
+```rust
 use super::super::stage::{Stage, StageUnimplemented};
 pub use std::error::Error;
 
 pub fn run(_s: &str, stage: Stage) -> Result<String, Box<dyn Error>> {
   match stage {
-    stage::Stage::A => Err(Box::new(StageUnimplemented(Stage::A))),
-    stage::Stage::B => Err(Box::new(StageUnimplemented(Stage::B))),
+    Stage::A => Err(Box::new(StageUnimplemented(Stage::A))),
+    Stage::B => Err(Box::new(StageUnimplemented(Stage::B))),
   }
 }
 ```
