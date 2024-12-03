@@ -12,6 +12,7 @@ syn = { version = "2.0.89", features = ["full", "parsing"] }
 clap = { version = "4.5.21", features = ["derive"] }
 dashmap = "6.1.0"
 fraction = "0.15.3"
+im = "15.1.0"
 paste = "1.0.15"
 rayon = "1.10.0"
 rgb = "0.8.50"
