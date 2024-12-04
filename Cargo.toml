@@ -19,3 +19,7 @@ rgb = "0.8.50"
 seq-macro = "0.3.5"
 textplots = "0.8.6"
 tqdm = "0.7.0"
+pre-commit-hooks = "0.3"
+
+[package.metadata.precommit]
+fmt = "cargo fmt"
