@@ -5,9 +5,8 @@ mod day01; pub mod day1 {pub use super::day01::run;}
 mod day02; pub mod day2 {pub use super::day02::run;}
 mod day03; pub mod day3 {pub use super::day03::run;}
 mod day04; pub mod day4 {pub use super::day04::run;}
+mod day05; pub mod day5 {pub use super::day05::run;}
 use std::fmt;#[derive(Debug)]struct DayError(u8);impl fmt::Display for DayError {fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {write!(f, "Invalid day: {}", self.0)}}impl Error for DayError {}
-pub mod day5 {pub fn run(_s: &str, _stage: super::Stage) -> Result<String, Box<dyn super::Error>> {Err(Box::new(super::DayError(5.into())))
-                    }}
 pub mod day6 {pub fn run(_s: &str, _stage: super::Stage) -> Result<String, Box<dyn super::Error>> {Err(Box::new(super::DayError(6.into())))
                     }}
 pub mod day7 {pub fn run(_s: &str, _stage: super::Stage) -> Result<String, Box<dyn super::Error>> {Err(Box::new(super::DayError(7.into())))
