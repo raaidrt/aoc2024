@@ -1,11 +1,9 @@
 use super::super::stage::Stage;
-use dashmap::DashMap;
+use crate::graph::{AdjacencyListGraph, Graph};
+use dashmap::{DashMap, DashSet};
 use rayon::prelude::*;
+use std::collections::{HashMap, HashSet};
 pub use std::error::Error;
-use std::{
-    collections::{HashMap, HashSet},
-    hash::Hash,
-};
 
 #[derive(Debug, Clone, Copy)]
 struct Order {
@@ -69,50 +67,6 @@ fn is_correct(orders: &Vec<Order>, line: &Vec<u32>) -> bool {
         .reduce(|| true, |x, y| x && y)
 }
 
-#[derive(Debug)]
-struct AdjacencyListGraph<T: Hash + Eq + Clone> {
-    nodes: Vec<T>,
-    edges: HashMap<T, Vec<T>>,
-}
-
-trait Graph<T: Hash + Eq + Clone> {
-    fn neighbors(&self, x: T) -> &Vec<T>;
-
-    fn nodes(&self) -> &Vec<T>;
-
-    fn dfs_topsort(&self, x: T, visited: &mut HashSet<T>, topsorted: &mut Vec<T>) {
-        assert!(!visited.contains(&x));
-        visited.insert(x.clone());
-        for nbor in self.neighbors(x.clone()) {
-            if !visited.contains(nbor) {
-                self.dfs_topsort(nbor.clone(), visited, topsorted);
-            }
-        }
-        topsorted.push(x);
-    }
-
-    fn topsort(&self) -> Vec<T> {
-        let mut visited = HashSet::new();
-        let mut topsorted = vec![];
-        self.nodes().into_iter().for_each(|node| {
-            if !visited.contains(&node.clone()) {
-                self.dfs_topsort(node.clone(), &mut visited, &mut topsorted);
-            }
-        });
-        topsorted.reverse();
-        topsorted
-    }
-}
-
-impl<T: Hash + Eq + Clone> Graph<T> for AdjacencyListGraph<T> {
-    fn nodes(&self) -> &Vec<T> {
-        &self.nodes
-    }
-    fn neighbors(&self, x: T) -> &Vec<T> {
-        self.edges.get(&x).unwrap()
-    }
-}
-
 pub fn run(s: &str, stage: Stage) -> Result<String, Box<dyn Error>> {
     match stage {
         Stage::A => {
@@ -136,34 +90,34 @@ pub fn run(s: &str, stage: Stage) -> Result<String, Box<dyn Error>> {
                 .filter(|line| !is_correct(&orders, line))
                 .collect();
 
-            let mut nodes = HashSet::new();
-            let mut edges = HashMap::new();
-            unordered.clone().into_iter().for_each(|line| {
+            let nodes = DashSet::new();
+            let edges = DashMap::new();
+            unordered.par_iter().for_each(|line| {
                 line.iter().for_each(|x| {
                     nodes.insert(*x);
                     edges.insert(*x, HashSet::new());
                 });
             });
-            orders.iter().for_each(|x| {
+            orders.par_iter().for_each(|x| {
                 nodes.insert(x.before);
                 nodes.insert(x.after);
-                let nbors = edges.get_mut(&x.before).unwrap();
-                nbors.insert(x.after);
+                (*edges.get_mut(&x.before).unwrap()).insert(x.after);
             });
 
             let result = unordered
-                .iter()
+                .par_iter()
                 .map(|line| {
                     let mut line_set: HashSet<u32> = HashSet::new();
                     line.iter().for_each(|x| {
                         line_set.insert(*x);
                     });
+                    let nodes: Vec<u32> = nodes
+                        .iter()
+                        .filter(|x| line_set.contains(x))
+                        .map(|x| x.clone())
+                        .collect();
                     let graph = AdjacencyListGraph {
-                        nodes: nodes
-                            .clone()
-                            .into_iter()
-                            .filter(|x| line_set.contains(x))
-                            .collect(),
+                        nodes: &nodes,
                         edges: edges
                             .clone()
                             .into_iter()
@@ -183,9 +137,7 @@ pub fn run(s: &str, stage: Stage) -> Result<String, Box<dyn Error>> {
                     line.sort_by(|a, b| (order.get(a).unwrap().cmp(order.get(b).unwrap())));
                     line[line.len() / 2]
                 })
-                .reduce(|x, y| x + y)
-                .unwrap();
-
+                .reduce(|| 0, |x, y| x + y);
             Ok(result.to_string())
         }
     }

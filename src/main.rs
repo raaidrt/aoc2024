@@ -1,4 +1,5 @@
 mod day;
+mod graph;
 mod stage;
 
 use clap::Parser;
