@@ -1,6 +1,7 @@
 use super::super::stage::{Stage, StageUnimplemented};
 use rayon::prelude::*;
 pub use std::error::Error;
+use std::sync::{atomic::AtomicBool, Arc};
 
 fn parse(s: &str) -> Vec<(u128, Vec<u128>)> {
     s.lines()
@@ -21,8 +22,11 @@ fn solve(lhs: u128, rhs_left: u128, rhs_right: &[u128]) -> bool {
     if rhs_right.len() == 0 {
         lhs == rhs_left
     } else {
-        solve(lhs, rhs_left + rhs_right[0], &rhs_right[1..])
-            || solve(lhs, rhs_left * rhs_right[0], &rhs_right[1..])
+        let (first, second) = rayon::join(
+            || solve(lhs, rhs_left + rhs_right[0], &rhs_right[1..]),
+            || solve(lhs, rhs_left * rhs_right[0], &rhs_right[1..]),
+        );
+        first || second
     }
 }
 
@@ -51,9 +55,25 @@ fn solve2(lhs: u128, rhs_left: u128, rhs_right: &[u128]) -> bool {
     if rhs_right.len() == 0 {
         lhs == rhs_left
     } else {
-        solve2(lhs, rhs_left + rhs_right[0], &rhs_right[1..])
-            || solve2(lhs, rhs_left * rhs_right[0], &rhs_right[1..])
-            || solve2(lhs, concat(rhs_left, rhs_right[0]), &rhs_right[1..])
+        let solved = AtomicBool::new(false);
+        rayon::scope(|s| {
+            s.spawn(|_| {
+                if solve2(lhs, rhs_left + rhs_right[0], &rhs_right[1..]) {
+                    solved.store(true, std::sync::atomic::Ordering::Relaxed);
+                }
+            });
+            s.spawn(|_| {
+                if solve2(lhs, rhs_left * rhs_right[0], &rhs_right[1..]) {
+                    solved.store(true, std::sync::atomic::Ordering::Relaxed);
+                }
+            });
+            s.spawn(|_| {
+                if solve2(lhs, concat(rhs_left, rhs_right[0]), &rhs_right[1..]) {
+                    solved.store(true, std::sync::atomic::Ordering::Relaxed);
+                }
+            });
+        });
+        solved.load(std::sync::atomic::Ordering::Relaxed)
     }
 }
 
