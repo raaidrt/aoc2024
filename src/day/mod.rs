@@ -8,9 +8,8 @@ mod day04; pub mod day4 {pub use super::day04::run;}
 mod day05; pub mod day5 {pub use super::day05::run;}
 mod day06; pub mod day6 {pub use super::day06::run;}
 mod day07; pub mod day7 {pub use super::day07::run;}
+mod day08; pub mod day8 {pub use super::day08::run;}
 use std::fmt;#[derive(Debug)]struct DayError(u8);impl fmt::Display for DayError {fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {write!(f, "Invalid day: {}", self.0)}}impl Error for DayError {}
-pub mod day8 {pub fn run(_s: &str, _stage: super::Stage) -> Result<String, Box<dyn super::Error>> {Err(Box::new(super::DayError(8.into())))
-                    }}
 pub mod day9 {pub fn run(_s: &str, _stage: super::Stage) -> Result<String, Box<dyn super::Error>> {Err(Box::new(super::DayError(9.into())))
                     }}
 pub mod day10 {pub fn run(_s: &str, _stage: super::Stage) -> Result<String, Box<dyn super::Error>> {Err(Box::new(super::DayError(10.into())))
