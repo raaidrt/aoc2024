@@ -5,15 +5,13 @@ pub use std::error::Error;
 
 fn parse(s: &str) -> (DashMap<char, Vec<(usize, usize)>>, Vec<Vec<Option<char>>>) {
     let map: DashMap<char, Vec<(usize, usize)>> = DashMap::new();
-    ('0'..='9').into_iter().for_each(|c| {
-        map.insert(c, vec![]);
-    });
-    ('a'..='z').into_iter().for_each(|c| {
-        map.insert(c, vec![]);
-    });
-    ('A'..='Z').into_iter().for_each(|c| {
-        map.insert(c, vec![]);
-    });
+    ('0'..='9')
+        .chain('a'..='z')
+        .chain('A'..='Z')
+        .into_iter()
+        .for_each(|c| {
+            map.insert(c, vec![]);
+        });
     s.lines().into_iter().enumerate().for_each(|(i, line)| {
         line.trim()
             .chars()

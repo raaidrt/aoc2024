@@ -1,7 +1,7 @@
-use super::super::stage::{Stage, StageUnimplemented};
+use super::super::stage::Stage;
 use rayon::prelude::*;
 pub use std::error::Error;
-use std::sync::{atomic::AtomicBool, Arc};
+use std::sync::atomic::AtomicBool;
 
 fn parse(s: &str) -> Vec<(u128, Vec<u128>)> {
     s.lines()
