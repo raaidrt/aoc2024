@@ -1,3 +1,4 @@
+use rayon::prelude::*;
 use std::{
     collections::{HashMap, HashSet},
     hash::Hash,
@@ -35,6 +36,30 @@ pub trait Graph<T: Hash + Eq + Clone> {
         });
         topsorted.reverse();
         topsorted
+    }
+
+    fn dag_dfs(&self, u: T, v: T) -> bool {
+        if u == v {
+            return true;
+        }
+        return self
+            .neighbors(u)
+            .iter()
+            .map(|nbor| self.dag_dfs(nbor.clone(), v.clone()))
+            .reduce(|x, y| x || y)
+            .unwrap_or_else(|| false);
+    }
+
+    fn dag_count_dfs(&self, u: T, v: T) -> usize {
+        if u == v {
+            return 1;
+        }
+        return self
+            .neighbors(u)
+            .iter()
+            .map(|nbor| self.dag_count_dfs(nbor.clone(), v.clone()))
+            .reduce(|x, y| x + y)
+            .unwrap_or_else(|| 0);
     }
 }
 
