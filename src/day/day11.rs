@@ -2,7 +2,6 @@ use super::super::stage::{Stage, StageUnimplemented};
 use rayon::prelude::*;
 use std::collections::HashMap;
 pub use std::error::Error;
-use tqdm::tqdm;
 
 fn parse(s: &str) -> Vec<usize> {
     s.trim().split(" ").map(|x| x.parse().unwrap()).collect()

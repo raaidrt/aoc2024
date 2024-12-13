@@ -1,5 +1,4 @@
 use super::super::stage::Stage;
-use im::OrdMap;
 use rayon::prelude::*;
 pub use std::error::Error;
 

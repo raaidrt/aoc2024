@@ -1,4 +1,4 @@
-use super::super::stage::{Stage, StageUnimplemented};
+use super::super::stage::Stage;
 use rayon::prelude::*;
 pub use std::error::Error;
 
