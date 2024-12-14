@@ -4,6 +4,8 @@ mod stage;
 
 use clap::Parser;
 use fraction::ToPrimitive;
+#[macro_use]
+extern crate scan_fmt;
 
 use std::{error::Error, fmt, fs, io::Read, path};
 

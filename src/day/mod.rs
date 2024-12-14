@@ -14,9 +14,8 @@ pub mod day10;
 pub mod day11;
 pub mod day12;
 pub mod day13;
+pub mod day14;
 use std::fmt;#[derive(Debug)]struct DayError(u8);impl fmt::Display for DayError {fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {write!(f, "Invalid day: {}", self.0)}}impl Error for DayError {}
-pub mod day14 {pub fn run(_s: &str, _stage: super::Stage) -> Result<String, Box<dyn super::Error>> {Err(Box::new(super::DayError(14.into())))
-                    }}
 pub mod day15 {pub fn run(_s: &str, _stage: super::Stage) -> Result<String, Box<dyn super::Error>> {Err(Box::new(super::DayError(15.into())))
                     }}
 pub mod day16 {pub fn run(_s: &str, _stage: super::Stage) -> Result<String, Box<dyn super::Error>> {Err(Box::new(super::DayError(16.into())))
