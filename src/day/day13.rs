@@ -76,7 +76,6 @@ fn solve(game: &Game) -> Option<i64> {
     }
 }
 
-use fraction::convert::TryToConvertFrom;
 use fraction::GenericFraction;
 
 fn not_parallel(game: &Game) -> bool {
