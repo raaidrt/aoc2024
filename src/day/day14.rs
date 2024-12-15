@@ -1,6 +1,8 @@
 use super::super::stage::Stage;
+use fraction::ToPrimitive;
 use rayon::prelude::*;
 pub use std::error::Error;
+use textplots::{AxisBuilder, Chart, ColorPlot, LabelBuilder, LineStyle, Shape};
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 struct Robot {
@@ -77,7 +79,7 @@ fn print_robots(robots: &Vec<Robot>) -> String {
         .collect();
     rows.join("\n")
 }
-
+#[allow(dead_code)]
 const CHRISTMAS: &str = "                             1                                        1                         1    
 1            1                                   1             1                     1               
                    1               1                                                                 
@@ -181,6 +183,8 @@ const CHRISTMAS: &str = "                             1                         
                                                                                          1           
                                                                                                      
                       1                         1   1                                                ";
+use miniz_oxide::deflate::compress_to_vec;
+use tqdm::tqdm;
 
 pub fn run(s: &str, stage: Stage) -> Result<String, Box<dyn Error>> {
     match stage {
@@ -223,22 +227,38 @@ pub fn run(s: &str, stage: Stage) -> Result<String, Box<dyn Error>> {
         }
         Stage::B => {
             let mut robots = parse(s);
-            let mut step = 0;
-            for num_steps in 0..2000000 {
+            let mut points = vec![];
+            let (mut min_point, mut min_day) = (usize::max_value(), 0);
+            for num_steps in tqdm(0..100) {
                 robots = robots
                     .par_iter()
                     .map(|robot| {
-                        let (x, y) = simulate(robot, 1);
+                        let (x, y) = simulate(robot, if num_steps == 0 { 97 } else { 101 });
                         Robot { x, y, ..*robot }
                     })
                     .collect();
 
-                if CHRISTMAS.eq(&print_robots(&robots)) {
-                    step = num_steps + 1;
-                    break;
+                let size = compress_to_vec(print_robots(&robots).as_bytes(), 10).len();
+                if size < min_point {
+                    min_point = size;
+                    min_day = 97 + 101 * num_steps;
                 }
+                let size = f32::from(size as u16);
+                points.push((f32::from((97 + num_steps * 101) as u16), size));
             }
-            let result = step;
+
+            let lines = Shape::Points(&points);
+            let mut chart = Chart::new(180, 60, 0.0, 10000.0);
+            let chart = chart
+                .linecolorplot(&lines, rgb::Rgb { r: 0, g: 255, b: 0 })
+                .x_label_format(textplots::LabelFormat::Custom(Box::new(move |x| {
+                    x.trunc().to_usize().unwrap().to_string()
+                })));
+            let chart = chart.x_axis_style(LineStyle::Dashed);
+            let chart = chart.y_axis_style(LineStyle::Dashed);
+            chart.nice();
+
+            let result = format!("{min_point}, {min_day}");
             Ok(result.to_string())
         }
     }

@@ -66,7 +66,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let num_threads_range: Vec<u16> = (NUM_THREADS_MIN..=NUM_THREADS_MAX).collect();
     let mut times = vec![f32::from(0.0); num_threads_range.len()];
     rayon::ThreadPoolBuilder::new()
-        .num_threads(1)
+        .num_threads(usize::from(NUM_THREADS_MAX))
         .build_global()
         .unwrap();
     if args.plot {
